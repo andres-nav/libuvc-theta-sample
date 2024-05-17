@@ -267,35 +267,7 @@ main(int argc, char **argv)
       "v4l2sink device=/dev/video60 sync=false"
       );
   else {
-    char output_str[MAX_OUTPUT_PIPELINE_LEN];
-    if (strlen(cam_params.filename) == 0) {
-      sprintf(output_str,
-        "rtph264pay pt=96 config-interval=1 ! "
-        "rtprateshape max-delay-us=%i max-bitrate=%i ! "
-        "udpsink host=%s port=%i",
-        cam_params.max_delay,
-        cam_params.max_bitrate,
-        cam_params.address,
-        cam_params.port
-        );
-    } else {
-      sprintf(output_str, "mpegtsmux ! filesink location=%s -e", cam_params.filename);
-    }
-
-    if (cam_params.bitrate == 0) {
-      // TODO There is some CAPS issue that generate wrong PTS
-      snprintf(pipe_proc, MAX_PIPELINE_LEN, "video/x-h264,framerate=30000/1001 ! %s", output_str);
-    } else {
-      snprintf(pipe_proc, MAX_PIPELINE_LEN,
-        "omxh264dec ! "
-        "omxh264enc insert-sps-pps=true profile=main control-rate=constant-skip-frames "
-        "preset-level=FastPreset bitrate=%i iframeinterval=%i ! "
-        "h264parse config-interval=1 ! %s",
-        cam_params.bitrate,
-        cam_params.kfi,
-        output_str
-        );
-    }
+    snprintf(pipe_proc, MAX_PIPELINE_LEN, "nvv4l2decoder ! nv3dsink sync=false qos=false");
   }
 
   if (!gst_src_init(&argc, &argv, pipe_proc))
