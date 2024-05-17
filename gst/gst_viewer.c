@@ -262,7 +262,7 @@ main(int argc, char **argv)
   }
   if (strcmp(cmd_name, "gst_loopback") == 0)
     snprintf(pipe_proc, MAX_PIPELINE_LEN,
-      "nvv4l2decoder ! nvvidconv ! "
+      "nvv4l2decoder ! nv3dsink ! "
       "video/x-raw,format=I420 ! identity drop-allocation=true !"
       "v4l2sink device=/dev/video60 sync=false"
       );
